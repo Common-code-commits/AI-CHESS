@@ -11,13 +11,10 @@
         </el-button>
       </el-col>
     </el-row>
-    <el-dialog :visible.sync="dialogFormVisible" title="网络连接" width="30%">
+    <el-dialog :show-close="false" :visible.sync="dialogFormVisible" title="网络连接" width="30%">
       <el-form ref="form" :model="form" :rules="rules" class="demo-ruleForm" label-width="100px">
         <el-form-item label="用户名" prop="username">
-          <el-input v-model="form.port"></el-input>
-        </el-form-item>
-        <el-form-item label="密码" prop="password">
-          <el-input v-model="form.port"></el-input>
+          <el-input v-model="form.username"></el-input>
         </el-form-item>
         <el-form-item label="IP地址" prop="ip">
           <el-input v-model="form.ip"></el-input>
@@ -28,7 +25,7 @@
       </el-form>
       <span slot="footer" class="dialog-footer">
         <el-button @click="submitForm(false)">取 消</el-button>
-        <el-button type="primary" @click="submitForm(true)">连 接</el-button>
+        <el-button type="primary" @click="submitForm(true)">下一步</el-button>
       </span>
     </el-dialog>
     <el-dialog
@@ -46,8 +43,19 @@
 </template>
 
 <script>
+import Socket from "@/api/socket";
+import {mapGetters} from "vuex";
+
 export default {
   name: "Begin",
+  computed: {
+    ...mapGetters([
+      'depth',
+      'mode',
+      'israndom',
+      'istip'
+    ])
+  },
   data() {
     return {
       // false: 未开始, true: 开始
@@ -58,21 +66,13 @@ export default {
       lose: 0,
       // false: 未暂停, true: 暂停
       pause: false,
-      // false: 未提示, true: 提示
-      tip: false,
-      // false: 未显示序号, true: 显示序号
-      showIndex: false,
-      // false: 未随机开局, true: 随机开局
-      random: false,
-      // false: 人机对战, true: 双人对战
-      mode: false,
+      socket: null,
       dialogFormVisible: false,
       centerDialogVisible: false,
       form: {
         ip: '',
         port: '',
-        username: '',
-        password: ''
+        username: ''
       },
       rules: {
         ip: [
@@ -83,9 +83,6 @@ export default {
         ],
         username: [
           {required: true, message: "请输入用户名", trigger: "blur"}
-        ],
-        password: [
-          {required: true, message: "请输入密码", trigger: "blur"}
         ]
       },
       // 按钮文字数组
@@ -110,6 +107,7 @@ export default {
     }
   },
   methods: {
+
     // 点击按钮
     handleClick(index) {
       switch (index) {
@@ -148,6 +146,14 @@ export default {
               this.status = false;
               this.button[0].text = "开始";
               this.button[0].class = "primary";
+              let msg = {
+                depth: this.depth,
+                mode: this.mode,
+                israndom: this.israndom,
+                istip: this.istip
+              };
+              this.socket.sendmsg(msg);
+              this.socket.close();
             }
           });
           break;
@@ -158,6 +164,9 @@ export default {
         this.$refs.form.validate(valid => {
           if (valid) {
             this.dialogFormVisible = false;
+            const {ip, port, username} = this.form;
+            this.socket = new Socket(this, ip, port, username);
+            this.socket.open();
           } else {
             return false;
           }
