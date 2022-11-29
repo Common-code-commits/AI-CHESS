@@ -52,16 +52,16 @@ export default {
           text: "思考深度",
           type: 0,
           options: [{
-            value: 0,
+            value: 4,
             label: '萌新（4-6）'
           }, {
-            value: 1,
+            value: 7,
             label: '职业（7-9）'
           }, {
-            value: 2,
+            value: 10,
             label: '大师（10-12）'
           }],
-          value: null
+          value: 4
         },
         {
           text: "对战模式",
@@ -73,27 +73,27 @@ export default {
             value: 1,
             label: '双人对战'
           }],
-          value: null
+          value: 0
         },
         {
           text: "随机开局",
           type: 1,
-          value: null
+          value: false
         },
         {
           text: "显示序号",
           type: 1,
-          value: null
+          value: false
         },
         {
           text: "提示走法",
           type: 1,
-          value: null
+          value: false
         },
         {
           text: "关于",
           type: 2,
-          value: null
+          value: false
         }
       ]
     }
@@ -105,19 +105,19 @@ export default {
     handleMenuItemClick(index) {
       switch (index) {
         case 0:
-          this.$store.commit('setDepth', this.menu_items[index].value)
+          this.$store.dispatch('user/setDepth', this.menu_items[index].value)
           break
         case 1:
-          this.$store.commit('setMode', this.menu_items[index].value)
+          this.$store.dispatch('user/setMode', this.menu_items[index].value)
           break
         case 2:
-          this.$store.commit('setRandom', this.menu_items[index].value)
+          this.$store.dispatch('user/setRandom', this.menu_items[index].value)
           break
         case 3:
-          this.$store.commit('setShowIndex', this.menu_items[index].value)
+          this.$store.dispatch('user/setShowIndex', this.menu_items[index].value)
           break
         case 4:
-          this.$store.commit('setShowTips', this.menu_items[index].value)
+          this.$store.dispatch('user/setShowTips', this.menu_items[index].value)
           break
         case 5:
           this.$router.push({path: '/about'})

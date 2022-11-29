@@ -40,12 +40,17 @@ export default {
       type: Boolean,
       default: false
     },
+    turn: {
+      type: Boolean,
+      default: false
+    },
   },
   data() {
     return {
       chess: null,
       indexs: null,
-      socket: null
+      socket: null,
+      epoch: 0
     }
   },
   created() {
@@ -61,15 +66,9 @@ export default {
     }
     this.indexs = index
     this.chess = chess
-    this.init()
   },
   methods: {
     handleClick(i, j) {
-      console.log(i, j)
-    },
-    init() {
-      // this.socket = new Socket(this, "127.0.0.1", "1111")
-      // this.socket.Sendmsg()
     }
   }
 }
