@@ -1,5 +1,5 @@
 import {Button, Col, Dialog, Form, FormItem, Input, Message, MessageBox, Option, Row, Select, Switch} from 'element-ui'
-import 'element-ui/lib/theme-chalk/index.css';
+import 'element-ui/lib/theme-chalk/index.css'
 
 const element = {
     install: function (Vue) {

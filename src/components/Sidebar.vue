@@ -15,11 +15,11 @@
           v-for="(item,index) in menu_items"
           :key="index"
           justify="space-between"
-          style="align-items: center;"
+          style="align-items: center"
           type="flex"
           @click.stop="handleMenuItemClick">
         <span>{{ item.text }}</span>
-        <el-select v-if="item.type === 0" v-model="item.value" placeholder="请选择">
+        <el-select v-if="item.type === 0" v-model="item.value" placeholder="请选择" @change="handleMenuItemClick(index)">
           <el-option
               v-for="t in item.options"
               :key="t.value"
@@ -72,7 +72,11 @@ export default {
           }, {
             value: 1,
             label: '双人对战'
-          }],
+          },
+            {
+              value: 2,
+              label: '随机对战'
+            }],
           value: 0
         },
         {
@@ -125,7 +129,7 @@ export default {
       }
     }
   }
-};
+}
 </script>
 
 <style scoped>
@@ -150,7 +154,7 @@ export default {
 }
 
 .el-select {
-  /*height: 12px;*/
+  /*height: 12px*/
   width: 30%;
 }
 

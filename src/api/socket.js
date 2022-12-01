@@ -1,12 +1,16 @@
 import VueSocketIO from 'vue-socket.io'
 
-export default class Socket {
-    constructor(that, ip, port, token = "6666") {
-        this.that = that
+class Socket {
+    constructor() {
+        this.methods = {}
+    }
+
+    init(that, ip, port, token = "6666") {
         const {io, emitter} = this.createSocket(that, ip, port, token)
         this.io = io
         this.emitter = emitter
     }
+
 
     createSocket(that, ip, port, username, token = "6666") {//也可在页面初始话调用
         const createSocketItem = new VueSocketIO({
@@ -17,7 +21,16 @@ export default class Socket {
                 // 创建时是否自动连接 我们这里设定为false,在指定页面再开启
                 autoConnect: false,
                 // 是否自动重连
-                reconnection: false,
+                reconnection: true,
+                // 重连次数
+                reconnectionAttempts: 5,
+                // 重连延迟
+                reconnectionDelay: 1000,
+                // 重连延迟最大值
+                reconnectionDelayMax: 5000,
+                // 连接超时时间
+                timeout: 20000,
+                // 是否使用query参数
                 query: {
                     loginUser: username,
                     token: token
@@ -52,8 +65,11 @@ export default class Socket {
         io.on('reconnect', () => {
             console.log('重连成功' + ip + ':' + port)
         })
-        emitter.addListener('push_event', (data) => {
-            console.log('data', data)
+        emitter.addListener('send_event', (data) => {
+            console.log('收到返回消息', data)
+            if (this.methods[data.url]) {
+                this.methods[data.url](data)
+            }
         }, that)
         return createSocketItem
     }
@@ -62,12 +78,12 @@ export default class Socket {
         return this.io.open()
     }
 
-    sendmsg(msg) { // 发送消息
-        return this.io.emit('receive_event', msg)
+    on(event, callback) {
+        this.methods[event] = callback
     }
 
-    lockResult() {
-        console.log('链接状态', this.io.connected)
+    sendmsg(data) { // 发送消息
+        return this.io.emit('send_event', data)
     }
 
     close() {
@@ -75,3 +91,5 @@ export default class Socket {
     }
 
 }
+
+export default new Socket()

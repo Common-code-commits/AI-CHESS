@@ -1,6 +1,6 @@
 import NProgress from 'nprogress' // progress bar
 import 'nprogress/nprogress.css' // progress bar style
-import router from "@/router";
+import router from "@/router"
 
 NProgress.configure({showSpinner: false}) // NProgress Configuration
 
