@@ -10,6 +10,8 @@ const state = {
     clear: false,
     epoch: 0,
     isconnet: false,
+    username: '',
+    socket: null,
 }
 
 const mutations = {
@@ -45,6 +47,12 @@ const mutations = {
     },
     SET_ISCONNECT: (state, isconnet) => {
         state.isconnet = isconnet
+    },
+    SET_USERNAME: (state, username) => {
+        state.username = username
+    },
+    SET_SOCKET: (state, socket) => {
+        state.socket = socket
     }
 }
 
@@ -81,6 +89,12 @@ const actions = {
     },
     setIsConnect({commit}, data) {
         commit('SET_ISCONNECT', data)
+    },
+    setUsername({commit}, data) {
+        commit('SET_USERNAME', data)
+    },
+    setSocket({commit}, data) {
+        commit('SET_SOCKET', data)
     }
 
 }

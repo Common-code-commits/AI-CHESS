@@ -10,5 +10,7 @@ const getters = {
     clear: state => state.user.clear,
     epoch: state => state.user.epoch,
     isconnet: state => state.user.isconnet,
+    username: state => state.user.username,
+    socket: state => state.user.socket,
 }
 export default getters

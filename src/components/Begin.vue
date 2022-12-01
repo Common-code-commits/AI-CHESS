@@ -76,8 +76,8 @@
 </template>
 
 <script>
-import Socket from "@/api/socket"
 import {mapGetters} from "vuex"
+import socket from "@/api/socket";
 
 export default {
   name: "Begin",
@@ -89,7 +89,6 @@ export default {
       lose: 0,
       // false: 未暂停, true: 暂停
       pause: true,
-      socket: null,
       dialogFormVisible: false,
       centerDialogVisible: false,
       battle: false,
@@ -164,6 +163,7 @@ export default {
       'istip',
       'color',
       'order',
+      'socket'
     ]),
     isconnet: {
       get() {
@@ -269,6 +269,9 @@ export default {
           break
       }
     },
+    change() {
+      this.button[0].class = "info"
+    },
     submitForm(flag) {
       if (flag === 0) {
         this.dialogFormVisible = false
@@ -280,16 +283,14 @@ export default {
           if (valid) {
             this.dialogFormVisible = false
             const {ip, port, username} = this.form
-            this.socket = Socket
-            this.socket.init(this, ip, port, username)
-            this.socket.open()
-            if (this.mode) {
-              let msg = {
-                url: 'setting',
-                username: this.form.username
-              }
-              this.socket.sendmsg(msg)
+            socket.open(this)
+            socket.on('setting', this.change)
+            let msg = {
+              url: 'setting',
+              username: this.form.username
             }
+            this.socket.sendmsg(msg)
+
             this.battle = true
           } else {
             return false

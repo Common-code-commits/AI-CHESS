@@ -3,14 +3,15 @@ import VueSocketIO from 'vue-socket.io'
 class Socket {
     constructor() {
         this.methods = {}
+        this.username = ''
+        this.flag = false
     }
 
-    init(that, ip, port, token = "6666") {
+    init(that, ip, port, username, token = "6666") {
         const {io, emitter} = this.createSocket(that, ip, port, token)
         this.io = io
         this.emitter = emitter
     }
-
 
     createSocket(that, ip, port, username, token = "6666") {//也可在页面初始话调用
         const createSocketItem = new VueSocketIO({
@@ -21,7 +22,7 @@ class Socket {
                 // 创建时是否自动连接 我们这里设定为false,在指定页面再开启
                 autoConnect: false,
                 // 是否自动重连
-                reconnection: true,
+                reconnection: false,
                 // 重连次数
                 reconnectionAttempts: 5,
                 // 重连延迟
@@ -32,11 +33,12 @@ class Socket {
                 timeout: 20000,
                 // 是否使用query参数
                 query: {
-                    loginUser: username,
+                    username: username,
                     token: token
                 }
             }
         })
+        this.username = username
         const {io, emitter} = createSocketItem
         io.on('connecting', () => {
             console.log('正在连接' + ip + ':' + port)
@@ -65,17 +67,22 @@ class Socket {
         io.on('reconnect', () => {
             console.log('重连成功' + ip + ':' + port)
         })
-        emitter.addListener('send_event', (data) => {
-            console.log('收到返回消息', data)
-            if (this.methods[data.url]) {
-                this.methods[data.url](data)
-            }
-        }, that)
         return createSocketItem
     }
 
-    open() {
-        return this.io.open()
+    open(that) {
+        if (!this.flag) {
+            this.flag = true
+            this.emitter.addListener('send_event', (data) => {
+                console.log('收到返回消息', data)
+                if (this.methods[data.url]) {
+                    this.methods[data.url](that, data)
+                }
+            }, that)
+            return this.io.open()
+        } else {
+            this.flag = false
+        }
     }
 
     on(event, callback) {
@@ -83,6 +90,8 @@ class Socket {
     }
 
     sendmsg(data) { // 发送消息
+        data.username = this.username
+        console.log('发送消息', data)
         return this.io.emit('send_event', data)
     }
 

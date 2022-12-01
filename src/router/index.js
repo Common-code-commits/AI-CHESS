@@ -6,6 +6,10 @@ Vue.use(Router)
 export const constantRoutes = [
     {
         path: '/',
+        component: () => import('@/components/Login')
+    },
+    {
+        path: '/game',
         component: () => import('@/components/Game')
     },
     {
